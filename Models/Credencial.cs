@@ -1,10 +1,10 @@
-namespace Models {
-
+namespace Models 
+{
     public class Credencial
     {
         public Guid Id { get; set; }
-        public required string email { get; set; }
-        public required string senha { get; set; }
-    
+        public required string Email { get; set; }
+        public required string Senha { get; set; }
+        public required Usuario Usuario { get; set; }
     }
 }

@@ -3,68 +3,82 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace Controllers
-
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsuarioController : ControllerBase
-    {
-          private static List<Usuario> DbUsuario = new List<Usuario>();
+	public class Cadastro 
+	{
+		public required Usuario Usuario { get; set; }
+		public required Credencial Credencial { get; set; }
+	}
 
-        [HttpPost]
-        public ActionResult<string> Cadastrar([FromBody] Usuario usuario) 
-        {
-            usuario.Id = Guid.NewGuid();
+	[Route("api/[controller]")]
+	[ApiController]
+	public class UsuarioController : ControllerBase
+	{
+		private static List<Usuario> DbUsuario = new List<Usuario>();
+		private static List<Credencial> DbCredencial = new List<Credencial>();
 
-            DbUsuario.Add(usuario);
+		[HttpPost]
+		public ActionResult Cadastrar([FromBody] Cadastro cadastro)
+		{
+			// Será reemplementado com EF.
+			cadastro.Usuario.Id = Guid.NewGuid();
+			cadastro.Credencial.Id = Guid.NewGuid();
 
-            return CreatedAtAction(nameof(ObterPorId), new { id = usuario.Id }, usuario);
-        }
+			DbUsuario.Add(cadastro.Usuario);
+			DbCredencial.Add(cadastro.Credencial);
+			// Fim.
 
-        [HttpGet("{id}")]
+			return CreatedAtAction(nameof(ObterPorId), new { id = cadastro.Usuario.Id }, cadastro.Usuario);
+		}
 
-        public Usuario ObterPorId(Guid Id)
-        {
-            Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == Id);
+		[HttpGet("{id}")]
+		public ActionResult<Usuario> ObterPorId(Guid Id)
+		{
+			// Será reemplementado com EF.
+			Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == Id);
+			// Fim.
 
-            return usuario;
-        }
+			if(usuario == null) 
+			{
+				return NotFound();
+			}
 
-         [HttpPut("{id}")]
+			return Ok(usuario);
+		}
 
-        public string AtualizarPorId(Guid id, [FromBody] Usuario usuarioComDadosAtualizados )
-        {
-            Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == id);
-            usuario = usuarioComDadosAtualizados;
+		[HttpPut("{id}")]
+		public ActionResult<string> AtualizarPorId(Guid id, [FromBody] Usuario usuarioComDadosAtualizados)
+		{
+			// Será reemplementado com EF.
+			Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == id);
+			usuario = usuarioComDadosAtualizados;
+			// Fim.
 
-            if(usuario != null)
-            {
-              return "Atualizado";   
-            }
+			if (usuario == null)
+			{
+				return NotFound();
+			}
 
-            else 
-             {
-                return "Usuario não encontrado.";  
-             }
-        }
+			return Ok("Usuario não encontrado.");
+		}
 
-         [HttpDelete("{id}")]
+		[HttpDelete("{id}")]
+		public ActionResult<string> AtualizarPorId(Guid id)
+		{
+			// Será reemplementado com EF.
+			Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == id);
+			// Fim.
 
-        public ActionResult<string> AtualizarPorId(Guid id)
-        {
-            Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == id);
-            DbUsuario.Remove(usuario);
+			if (usuario == null)
+			{
+				return NotFound();
+			}
 
-            
-            if(usuario != null)
-            {
-              return "Usuario Deletado.";  
-            }
-
-            else 
-             {
-                return "Usuario não encontrado.";  
-             }
-        }
-    }
+			// Será reemplementado com EF.
+			DbUsuario.Remove(usuario);
+			// Fim.
+				
+			return Ok("Usuario não encontrado.");
+		}
+	}
 }
