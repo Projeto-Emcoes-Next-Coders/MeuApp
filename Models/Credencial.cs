@@ -5,6 +5,7 @@ namespace Models
         public Guid Id { get; set; }
         public required string Email { get; set; }
         public required string Senha { get; set; }
+        public Guid IdUsuario { get; set; }
         public required Usuario Usuario { get; set; }
     }
 }

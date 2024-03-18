@@ -1,6 +1,9 @@
+using Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Requests;
+using Responses;
 
 namespace Controllers
 {
@@ -8,16 +11,49 @@ namespace Controllers
     [ApiController]
     public class GatilhoController : ControllerBase
     {
-           private static List<Emocoes> DbEmocoes = new List<Emocoes>();
+        private readonly DbEmoday Contexto = new DbEmoday();
 
-            [HttpPost]
-        public Emocoes InserirGatilho([FromBody] Emocoes emocoes) {
-           
-            emocoes.Id = Guid.NewGuid();
+        [HttpPost]
+        public ActionResult<CadastroGatilhoResponse> Cadastrar([FromBody] CadastroGatilhoRequest novoGatilho)
+        {
+            try
+            {
+                Gatilho gatilho = new Gatilho 
+                {
+                    Motivo = novoGatilho.Motivo,
+                    IdUsuario = novoGatilho.IdUsuario,
+                    IdReacao = novoGatilho.IdReacao
+                };
 
-            DbEmocoes.Add(emocoes);
+                Contexto.Gatilhos.Add(gatilho);
+                Contexto.SaveChanges();
 
-            return emocoes;
+                return CreatedAtAction(nameof(ObterPeloId), new { Motivo = gatilho.Motivo, IdReacao = gatilho.IdReacao });
+            }
+            catch
+            {
+                return StatusCode(500, "O problema foi sério, mas a gente passa bem!");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<ObterGatilhoResponse> ObterPeloId(Guid id)
+        {
+            try
+            {
+                var gatilho = Contexto.Gatilhos.Find(id);
+
+                if(gatilho == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(gatilho);
+            }
+            catch
+            {
+                return StatusCode(500, "O problema foi sério, mas a gente passa bem!");
+            }
         }
     }
 }

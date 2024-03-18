@@ -1,84 +1,145 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+using Contexts;
 using Models;
+using Requests;
+using Responses;
 
 namespace Controllers
 {
-	public class Cadastro 
-	{
-		public required Usuario Usuario { get; set; }
-		public required Credencial Credencial { get; set; }
-	}
+    public class Cadastro
+    {
+        public required Usuario Usuario { get; set; }
+        public required Credencial Credencial { get; set; }
+    }
 
-	[Route("api/[controller]")]
-	[ApiController]
-	public class UsuarioController : ControllerBase
-	{
-		private static List<Usuario> DbUsuario = new List<Usuario>();
-		private static List<Credencial> DbCredencial = new List<Credencial>();
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsuarioController : ControllerBase
+    {
+		private readonly DbEmoday Contexto = new DbEmoday();
 
 		[HttpPost]
-		public ActionResult Cadastrar([FromBody] Cadastro cadastro)
+		public ActionResult<CadastroUsuarioResponse> Cadastrar([FromBody] CadastroUsuarioRequest cadastroUsuario)
 		{
-			// Será reemplementado com EF.
-			cadastro.Usuario.Id = Guid.NewGuid();
-			cadastro.Credencial.Id = Guid.NewGuid();
+			try
+            {
+                Usuario usuario = new Usuario
+                {
+                    Nome = cadastroUsuario.Nome,
+                    Sobrenome = cadastroUsuario.Sobrenome,
+                    DataNascimento = cadastroUsuario.DataNascimento,
+                    Genero = cadastroUsuario.Genero,
+                    Naturalidade = cadastroUsuario.Naturalidade,
+                    Telefone = cadastroUsuario.Telefone
+                };
 
-			DbUsuario.Add(cadastro.Usuario);
-			DbCredencial.Add(cadastro.Credencial);
-			// Fim.
+                Credencial credencial = new Credencial
+                {
+                    Email = cadastroUsuario.Credencial.Email,
+                    Senha = cadastroUsuario.Credencial.Senha,
+                    Usuario = usuario
+                };
 
-			return CreatedAtAction(nameof(ObterPorId), new { id = cadastro.Usuario.Id }, cadastro.Usuario);
+                Contexto.Usuarios.Add(usuario);
+                Contexto.Credencials.Add(credencial);
+                Contexto.SaveChanges();
+
+                return Created();
+            }
+            catch
+            {
+                return StatusCode(500, "Houve um problema, tente mais tarde!");
+            }
+		}
+
+		[HttpGet]
+        public ActionResult<IEnumerable<Usuario>> ObterLista()
+        {
+            try
+            {
+                var Usuarios = Contexto.Usuarios.ToList();
+
+                return Ok(Usuarios);
+            }
+            catch
+            {
+                return StatusCode(500, "Houve um problema, tente mais tarde!");
+            }
 		}
 
 		[HttpGet("{id}")]
 		public ActionResult<Usuario> ObterPorId(Guid Id)
 		{
-			// Será reemplementado com EF.
-			Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == Id);
-			// Fim.
+			
+			try
+            {
+                var Usuario = Contexto.Usuarios.Find(Id);
+                // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
 
-			if(usuario == null) 
-			{
-				return NotFound();
-			}
+                if (Usuario == null)
+                {
+                    return BadRequest();
+                }
 
-			return Ok(usuario);
+                return Ok(Usuario);
+            }
+            catch
+            {
+                return StatusCode(500, "Houve um problema, tente mais tarde!");
+            }
 		}
 
 		[HttpPut("{id}")]
-		public ActionResult<string> AtualizarPorId(Guid id, [FromBody] Usuario usuarioComDadosAtualizados)
+		public ActionResult<string> AtualizarPorId(Guid Id, [FromBody] Usuario UsuarioAtualizado)
 		{
-			// Será reemplementado com EF.
-			Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == id);
-			usuario = usuarioComDadosAtualizados;
-			// Fim.
 
-			if (usuario == null)
-			{
-				return NotFound();
-			}
+			try
+            {
+                var Usuario = Contexto.Usuarios.Find(Id);
+                // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
 
-			return Ok("Usuario não encontrado.");
+                if (Usuario == null || Usuario.Id != UsuarioAtualizado.Id)
+                {
+                    return BadRequest();
+                }
+
+                Contexto.Usuarios.Entry(UsuarioAtualizado).State = EntityState.Modified;
+                Contexto.SaveChanges();
+
+                // return NoContent();
+                return Ok(UsuarioAtualizado);
+            }
+            catch
+            {
+                return StatusCode(500, "Houve um problema, tente mais tarde!");
+            }
 		}
 
 		[HttpDelete("{id}")]
 		public ActionResult<string> AtualizarPorId(Guid id)
 		{
-			// Será reemplementado com EF.
-			Usuario? usuario = DbUsuario.FirstOrDefault(u => u.Id == id);
-			// Fim.
+			 try
+            {
+                var Usuario = Contexto.Usuarios.Find(id);
+                // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
 
-			if (usuario == null)
-			{
-				return NotFound();
-			}
+                if (Usuario == null)
+                {
+                    return BadRequest();
+                }
 
-			// Será reemplementado com EF.
-			DbUsuario.Remove(usuario);
-			// Fim.
-				
-			return Ok("Usuario não encontrado.");
+                Contexto.Usuarios.Remove(Usuario);
+                Contexto.SaveChanges();
+
+                return NoContent();
+            }
+            catch
+            {
+                return StatusCode(500, "Houve um problema, tente mais tarde!");
+            }
 		}
 	}
 }
