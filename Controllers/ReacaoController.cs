@@ -2,6 +2,7 @@ using Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Responses;
 
 namespace Controllers
 {
@@ -9,10 +10,10 @@ namespace Controllers
     [ApiController]
     public class ReacaoController : ControllerBase
     {
-    private readonly DbEmoday Contexto = new DbEmoday();
-        
+        private readonly DbEmoday Contexto = new DbEmoday();
+
         [HttpGet]
-         public ActionResult<IEnumerable<Usuario>> ObterLista()
+        public ActionResult<IEnumerable<ObterReacoesResponse>> ObterLista()
         {
             try
             {

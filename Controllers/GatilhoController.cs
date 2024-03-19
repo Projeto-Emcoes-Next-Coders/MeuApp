@@ -18,7 +18,7 @@ namespace Controllers
         {
             try
             {
-                Gatilho gatilho = new Gatilho 
+                Gatilho gatilho = new Gatilho
                 {
                     Motivo = novoGatilho.Motivo,
                     IdUsuario = novoGatilho.IdUsuario,
@@ -43,7 +43,7 @@ namespace Controllers
             {
                 var gatilho = Contexto.Gatilhos.Find(id);
 
-                if(gatilho == null)
+                if (gatilho == null)
                 {
                     return BadRequest();
                 }

@@ -19,12 +19,12 @@ namespace Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-		private readonly DbEmoday Contexto = new DbEmoday();
+        private readonly DbEmoday Contexto = new DbEmoday();
 
-		[HttpPost]
-		public ActionResult<CadastroUsuarioResponse> Cadastrar([FromBody] CadastroUsuarioRequest cadastroUsuario)
-		{
-			try
+        [HttpPost]
+        public ActionResult<CadastroUsuarioResponse> Cadastrar([FromBody] CadastroUsuarioRequest cadastroUsuario)
+        {
+            try
             {
                 Usuario usuario = new Usuario
                 {
@@ -53,28 +53,13 @@ namespace Controllers
             {
                 return StatusCode(500, "Houve um problema, tente mais tarde!");
             }
-		}
+        }
 
-		[HttpGet]
-        public ActionResult<IEnumerable<Usuario>> ObterLista()
+        [HttpGet("{id}")]
+        public ActionResult<ObterUsuariosResponse> ObterPorId(Guid Id)
         {
+
             try
-            {
-                var Usuarios = Contexto.Usuarios.ToList();
-
-                return Ok(Usuarios);
-            }
-            catch
-            {
-                return StatusCode(500, "Houve um problema, tente mais tarde!");
-            }
-		}
-
-		[HttpGet("{id}")]
-		public ActionResult<Usuario> ObterPorId(Guid Id)
-		{
-			
-			try
             {
                 var Usuario = Contexto.Usuarios.Find(Id);
                 // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
@@ -90,13 +75,13 @@ namespace Controllers
             {
                 return StatusCode(500, "Houve um problema, tente mais tarde!");
             }
-		}
+        }
 
-		[HttpPut("{id}")]
-		public ActionResult<string> AtualizarPorId(Guid Id, [FromBody] Usuario UsuarioAtualizado)
-		{
+        [HttpPut("{id}")]
+        public ActionResult<AtualizarUsuarioResponse> AtualizarPorId(Guid Id, [FromBody] AtualizarUsuarioRequest UsuarioAtualizado)
+        {
 
-			try
+            try
             {
                 var Usuario = Contexto.Usuarios.Find(Id);
                 // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
@@ -106,22 +91,22 @@ namespace Controllers
                     return BadRequest();
                 }
 
-                Contexto.Usuarios.Entry(UsuarioAtualizado).State = EntityState.Modified;
+                Contexto.Usuarios.Entry(Usuario).State = EntityState.Modified;
                 Contexto.SaveChanges();
 
                 // return NoContent();
-                return Ok(UsuarioAtualizado);
+                return Ok(Usuario);
             }
             catch
             {
                 return StatusCode(500, "Houve um problema, tente mais tarde!");
             }
-		}
+        }
 
-		[HttpDelete("{id}")]
-		public ActionResult<string> AtualizarPorId(Guid id)
-		{
-			 try
+        [HttpDelete("{id}")]
+        public ActionResult<string> AtualizarPorId(Guid id)
+        {
+            try
             {
                 var Usuario = Contexto.Usuarios.Find(id);
                 // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
@@ -140,6 +125,6 @@ namespace Controllers
             {
                 return StatusCode(500, "Houve um problema, tente mais tarde!");
             }
-		}
-	}
+        }
+    }
 }
