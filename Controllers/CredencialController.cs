@@ -14,25 +14,24 @@ namespace Controllers
   {
     private readonly DbEmoday Contexto = new DbEmoday();
 
-    [HttpPatch("{id}")]
-    public ActionResult<AtualizarCredencialResponse> AtualizarPorId(Guid Id, [FromBody] AtualizarCredencialRequest CredencialAtualizada)
+    [HttpPatch("{idUsuario}")]
+    public ActionResult AtualizarPorId(Guid idUsuario, [FromBody] AtualizarCredencialRequest credencialAtualizada)
     {
-
       try
       {
-        var Credencial = Contexto.Credencials.Find(Id);
-        // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
+        var credencial = Contexto.Credencials.Find(idUsuario);
 
-        if (Credencial == null || Credencial.Id != CredencialAtualizada.Id)
+        if (credencial == null)
         {
           return BadRequest();
         }
 
-        Contexto.Credencials.Entry(Credencial).State = EntityState.Modified;
+        credencial.Senha = credencialAtualizada.Senha;
+
+        Contexto.Credencials.Entry(credencial).State = EntityState.Modified;
         Contexto.SaveChanges();
 
-        // return NoContent();
-        return Ok(CredencialAtualizada);
+        return NoContent();
       }
       catch
       {

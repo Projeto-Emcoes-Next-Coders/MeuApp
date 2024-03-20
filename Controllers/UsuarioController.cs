@@ -17,6 +17,8 @@ namespace Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
+    [Consumes("application/json")] 
     public class UsuarioController : ControllerBase
     {
         private readonly DbEmoday Contexto = new DbEmoday();
@@ -46,8 +48,15 @@ namespace Controllers
                 Contexto.Usuarios.Add(usuario);
                 Contexto.Credencials.Add(credencial);
                 Contexto.SaveChanges();
-
-                return Created();
+                
+                /*
+                return CreatedAtAction(
+                    nameof(ObterPorId), 
+                    new { id = usuario.Id },
+                    usuario
+                );
+                */
+                return Created(nameof(ObterPorId), new { id = usuario.Id });
             }
             catch
             {
@@ -56,20 +65,30 @@ namespace Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ObterUsuariosResponse> ObterPorId(Guid Id)
+        public ActionResult<ObterUsuariosResponse> ObterPorId(Guid id)
         {
 
             try
             {
-                var Usuario = Contexto.Usuarios.Find(Id);
+                var usuario = Contexto.Usuarios.Find(id);
                 // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
 
-                if (Usuario == null)
+                if (usuario == null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(Usuario);
+                return Ok(
+                    new 
+                    {
+                        Nome = usuario.Nome,
+                        Sobrenome = usuario.Sobrenome,
+                        DataNascimento = usuario.DataNascimento,
+                        Genero = usuario.Genero,
+                        Naturalidade = usuario.Naturalidade,
+                        Telefone = usuario.Telefone
+                    }
+                );
             }
             catch
             {
@@ -78,24 +97,39 @@ namespace Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<AtualizarUsuarioResponse> AtualizarPorId(Guid Id, [FromBody] AtualizarUsuarioRequest UsuarioAtualizado)
+        public ActionResult<AtualizarUsuarioResponse> AtualizarPorId(Guid id, [FromBody] AtualizarUsuarioRequest usuarioAtualizado)
         {
-
             try
             {
-                var Usuario = Contexto.Usuarios.Find(Id);
-                // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
+                var usuario = Contexto.Usuarios.Find(id);
 
-                if (Usuario == null || Usuario.Id != UsuarioAtualizado.Id)
+                if (usuario == null || usuario.Id != usuarioAtualizado.Id)
                 {
                     return BadRequest();
                 }
 
-                Contexto.Usuarios.Entry(Usuario).State = EntityState.Modified;
+                usuario.Nome = usuarioAtualizado.Nome;
+                usuario.Sobrenome = usuarioAtualizado.Sobrenome;
+                usuario.DataNascimento = usuarioAtualizado.DataNascimento;
+                usuario.Genero = usuarioAtualizado.Genero;
+                usuario.Naturalidade = usuarioAtualizado.Naturalidade;
+                usuario.Telefone = usuarioAtualizado.Telefone;
+
+                Contexto.Usuarios.Entry(usuario).State = EntityState.Modified;
                 Contexto.SaveChanges();
 
-                // return NoContent();
-                return Ok(Usuario);
+                return Ok(
+                    new 
+                    {
+                        Id = usuario.Id,
+                        Nome = usuario.Nome,
+                        Sobrenome = usuario.Sobrenome,
+                        DataNascimento = usuario.DataNascimento,
+                        Genero = usuario.Genero,
+                        Naturalidade = usuario.Naturalidade,
+                        Telefone = usuario.Telefone
+                    }
+                );
             }
             catch
             {
@@ -108,15 +142,14 @@ namespace Controllers
         {
             try
             {
-                var Usuario = Contexto.Usuarios.Find(id);
-                // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
+                var usuario = Contexto.Usuarios.Find(id);
 
-                if (Usuario == null)
+                if (usuario == null)
                 {
                     return BadRequest();
                 }
 
-                Contexto.Usuarios.Remove(Usuario);
+                Contexto.Usuarios.Remove(usuario);
                 Contexto.SaveChanges();
 
                 return NoContent();
