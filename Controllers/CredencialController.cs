@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Requests;
+using Responses;
 
 namespace Controllers
 {
@@ -13,7 +15,7 @@ namespace Controllers
     private readonly DbEmoday Contexto = new DbEmoday();
 
     [HttpPatch("{id}")]
-    public ActionResult<string> AtualizarPorId(Guid Id, [FromBody] Credencial CredencialAtualizada)
+    public ActionResult<AtualizarCredencialResponse> AtualizarPorId(Guid Id, [FromBody] AtualizarCredencialRequest CredencialAtualizada)
     {
 
       try
@@ -26,7 +28,7 @@ namespace Controllers
           return BadRequest();
         }
 
-        Contexto.Credencials.Entry(CredencialAtualizada).State = EntityState.Modified;
+        Contexto.Credencials.Entry(Credencial).State = EntityState.Modified;
         Contexto.SaveChanges();
 
         // return NoContent();
