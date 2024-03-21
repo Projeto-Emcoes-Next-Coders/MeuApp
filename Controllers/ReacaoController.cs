@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Responses;
+using Requests;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Controllers
 {
@@ -12,19 +14,50 @@ namespace Controllers
     {
         private readonly DbEmoday Contexto = new DbEmoday();
 
-        [HttpGet]
-        public ActionResult<IEnumerable<ObterReacoesResponse>> ObterLista()
+        [HttpPost]
+        public ActionResult<CadastroReacaoResponse> Cadastrar([FromBody] CadastroReacaoRequest ReacaoCadastrada)
         {
             try
             {
-                var Reacao = Contexto.Reacaos.ToList();
+                Reacao reacao = new Reacao
+                {
+                    Nome = ReacaoCadastrada.Nome,
+                    Descrição = ReacaoCadastrada.Descrição
+                };
 
-                return Ok(Reacao);
+                Contexto.Reacaos.Add(reacao);
+                Contexto.SaveChanges();
+
+                return Created("ObterporId", new { id = reacao.Id });
             }
             catch
             {
                 return StatusCode(500, "O problema foi sério, mas a gente passa bem!");
             }
         }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<ObterReacoesResponse>> ObterLista()
+        {
+            try
+            {
+                var reacoes = Contexto.Reacaos
+                    .Select(r => new
+                    {
+                        Id = r.Id,
+                        Nome = r.Nome,
+                        Descrição = r.Descrição
+                    })
+                    .ToList();
+
+                return Ok(reacoes);
+            }
+            catch
+            {
+                return StatusCode(500, "Houve um problema, tente novamente!");
+            }
+        }
+
+
     }
 }

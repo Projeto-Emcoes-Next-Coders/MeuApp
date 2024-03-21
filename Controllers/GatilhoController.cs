@@ -28,7 +28,7 @@ namespace Controllers
                 Contexto.Gatilhos.Add(gatilho);
                 Contexto.SaveChanges();
 
-                return CreatedAtAction(nameof(ObterPeloId), new { Motivo = gatilho.Motivo, IdReacao = gatilho.IdReacao });
+                return Created("ObterPeloId", new { Id = gatilho.Id, IdReacao = gatilho.IdReacao, Motivo = gatilho.Motivo });
             }
             catch
             {
@@ -37,22 +37,31 @@ namespace Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ObterGatilhoResponse> ObterPeloId(Guid id)
+        public ActionResult<ObterGatilhoResponse> ObterPorId(Guid id)
         {
+
             try
             {
                 var gatilho = Contexto.Gatilhos.Find(id);
+                // var produto = Contexto.Produtos.FirstOrDefault(p => p.Id == id);
 
-                if (gatilho == null)
+                if ( gatilho == null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(gatilho);
+                return Ok(
+                    new
+                    {
+                        Motivo = gatilho.Motivo,
+                        IdUsuario = gatilho.IdUsuario,
+                        IdReacao = gatilho.IdReacao                        
+                    }
+                );
             }
             catch
             {
-                return StatusCode(500, "O problema foi sério, mas a gente passa bem!");
+                return StatusCode(500, "Houve um problema, tente mais tarde!");
             }
         }
     }

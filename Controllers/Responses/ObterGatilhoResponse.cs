@@ -4,5 +4,6 @@ namespace Responses
     {
         public string? Motivo { get; set; }
         public Guid IdReacao { get; set; }
+        public Guid IdUsuario { get; set; }
     }
 }
