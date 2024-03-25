@@ -1,4 +1,5 @@
 using Contexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace Controllers
     private readonly DbEmoday Contexto = new DbEmoday();
 
     [HttpPatch("{idUsuario}")]
+    [Authorize]
     public ActionResult AtualizarPorId(Guid idUsuario, [FromBody] AtualizarCredencialRequest credencialAtualizada)
     {
       try

@@ -6,6 +6,7 @@ using Contexts;
 using Models;
 using Requests;
 using Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Controllers
 {
@@ -65,6 +66,7 @@ namespace Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<ObterUsuariosResponse> ObterPorId(Guid id)
         {
 
@@ -97,6 +99,7 @@ namespace Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult<AtualizarUsuarioResponse> AtualizarPorId(Guid id, [FromBody] AtualizarUsuarioRequest usuarioAtualizado)
         {
             try
@@ -138,6 +141,7 @@ namespace Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult<string> AtualizarPorId(Guid id)
         {
             try
