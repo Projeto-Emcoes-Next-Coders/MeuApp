@@ -5,7 +5,6 @@ using Models;
 using Responses;
 using Requests;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Controllers
 {
@@ -16,7 +15,6 @@ namespace Controllers
         private readonly DbEmoday Contexto = new DbEmoday();
 
         [HttpPost]
-        [Authorize(Roles = "Desenvolvedor")]
         public ActionResult<CadastroReacaoResponse> Cadastrar([FromBody] CadastroReacaoRequest ReacaoCadastrada)
         {
             try

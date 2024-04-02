@@ -1,5 +1,4 @@
 using Contexts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -15,7 +14,6 @@ namespace Controllers
         private readonly DbEmoday Contexto = new DbEmoday();
 
         [HttpPost]
-        [Authorize]
         public ActionResult<CadastroGatilhoResponse> Cadastrar([FromBody] CadastroGatilhoRequest novoGatilho)
         {
             try
@@ -39,7 +37,6 @@ namespace Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public ActionResult<ObterGatilhoResponse> ObterPorId(Guid id)
         {
 
