@@ -45,5 +45,6 @@ namespace Contexts
             // definicoesContrutor.UseNpgsql("");
             definicoesContrutor.UseInMemoryDatabase("MinhaLoja");
         }
+
     }
 }
